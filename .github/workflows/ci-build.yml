@@ -32,10 +32,3 @@ jobs:
       - name: Build
         shell: bash
         run: npm run build
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: build/*
-          retention-days: 1
-          if-no-files-found: error
