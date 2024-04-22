@@ -1,0 +1,41 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    types: [opened, reopened, synchronize]
+  workflow_dispatch: # Manually invoked by user.
+
+name: ci-build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        shell: bash
+        run: npm ci
+
+      - name: Build
+        shell: bash
+        run: npm run build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: build/*
+          retention-days: 1
+          if-no-files-found: error
